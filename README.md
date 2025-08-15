@@ -11,7 +11,7 @@ This project involves **deploying a Kanban app to Netlify**, ensuring the app's 
 
 ### Initial Data Fetching & Loading State
 
-- My Project **Fetch tasks dynamically** from an API: https://jsl-kanban-api.vercel.app/
+- My Project **Fetches tasks dynamically** from an API: https://jsl-kanban-api.vercel.app/
 
 - I also **Replaced any hard-coded task data**, to ensure the application receives the most up-to-date tasks.
 

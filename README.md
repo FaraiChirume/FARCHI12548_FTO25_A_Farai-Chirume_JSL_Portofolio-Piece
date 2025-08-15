@@ -5,7 +5,9 @@
 
 This project involves **deploying a Kanban app to Netlify**, ensuring the app's functionality and persistence through local storage, and implementing dynamic features such as task editing, deletion, sidebar interaction, and a theme toggle. My goal was to deliver a fully functional, deployable application that is responsive across devices and maintains data consistency. I also focused on **clean, modular code** which is well-documented for future development.
 
-- **Recorded Presentation:** link ********
+- **Recorded Presentation:**
+ link1(https://www.loom.com/share/a3f50f294ef54d1bb409070339db2d57)
+ link2(https://www.loom.com/share/af197f3df32c4e50ad2e1f688c4fe048)
 - **App link :** link*******
 - **Figma Design Reffrence :** (https://www.figma.com/design/y7bFCUYL5ZHfPeojACBXg2/Challenges-%7C-JSL?node-id=6033-11092)
 

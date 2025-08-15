@@ -1,3 +1,106 @@
+const API_BASE_URL = "https://jsl-kanban-api.vercel.app/";
+
+// Load user preferences and tasks from localStorage
+let userPreferences = JSON.parse(localStorage.getItem("kanbanPreferences")) || {
+  theme: "light",
+  sidebarHidden: false
+};
+let tasks = JSON.parse(localStorage.getItem("kanbanTasks")) || [];
+
+/**
+ * Saves user preferences to localStorage.
+ */
+function savePreferences() {
+  localStorage.setItem("kanbanPreferences", JSON.stringify(userPreferences));
+}
+
+/**
+ * Saves tasks to localStorage.
+ */
+function saveTasks() {
+  localStorage.setItem("kanbanTasks", JSON.stringify(tasks));
+}
+
+/**
+ * Showsl loading indicator.
+ */
+function showLoadingIndicator() {
+  const loadingIndicator = document.getElementById("loading-indicator");
+  if (loadingIndicator) {
+    loadingIndicator.classList.remove("hidden");
+  }
+}
+
+/**
+ * Hides loading indicator.
+ */
+function hideLoadingIndicator() {
+  const loadingIndicator = document.getElementById("loading-indicator");
+  if (loadingIndicator) {
+    loadingIndicator.classList.add("hidden");
+  }
+}
+
+/**
+ * Fetches tasks from the API if localStorage is empty.
+ * @returns {Promise<Array<Object>>} Array of task objects.
+ */
+async function fetchTasks() {
+  if (tasks.length > 0) {
+    return tasks;
+  }
+
+  // Otherwise, fetch from API
+  showLoadingIndicator();
+  try {
+    const response = await fetch(API_BASE_URL);
+    if (!response.ok) throw new Error(`Failed to fetch tasks: ${response.status}`);
+    tasks = await response.json();
+    saveTasks(); 
+    return tasks;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    alert("Failed to load tasks from server. Starting with empty task list.");
+    return tasks; 
+  } finally {
+    hideLoadingIndicator();
+  }
+}
+
+/**
+ * Creates a new task in localStorage.
+ * @param {Object} task - Task data object.
+ * @returns {Object} Created task object.
+ */
+function createTask(task) {
+  tasks.push(task);
+  saveTasks();
+  return task;
+}
+
+/**
+ * Updates a task in localStorage.
+ * @param {number} taskId - ID of the task to update.
+ * @param {Object} task - Updated task data.
+ * @returns {Object} Updated task object or null if not found.
+ */
+function updateTask(taskId, task) {
+  tasks = tasks.map(t => (t.id === taskId ? { ...t, ...task } : t));
+  saveTasks();
+  return task;
+}
+
+/**
+ * Deletes a task from localStorage.
+ * @param {number} taskId - ID of the task to delete.
+ * @returns {boolean} True if deletion was successful.
+ */
+function deleteTask(taskId) {
+  tasks = tasks.filter(t => t.id !== taskId);
+  saveTasks();
+  return true;
+}
+
 /**
  * Creates a single task DOM element.
  * @param {Object} task - Task data object.
@@ -172,3 +275,91 @@ function setupNewTaskModal() {
     }
   });
 }
+
+/**
+ * Sets up sidebar toggle behavior.
+ */
+function setupSidebarToggle() {
+  const hideSidebar = document.getElementsByClassName("side-bar")[0];
+  const hideSidebarBtn = document.getElementById("hide-sidebar");
+  const showSidebar = document.getElementById("show-side-bar");
+
+  hideSidebar.classList.toggle("hidden", userPreferences.sidebarHidden);
+  showSidebar.classList.toggle("hidden", !userPreferences.sidebarHidden);
+
+  hideSidebarBtn.addEventListener("click", () => {
+    hideSidebar.classList.add("hidden");
+    showSidebar.classList.remove("hidden");
+    userPreferences.sidebarHidden = true;
+    savePreferences();
+  });
+
+  showSidebar.addEventListener("click", () => {
+    hideSidebar.classList.remove("hidden");
+    showSidebar.classList.add("hidden");
+    userPreferences.sidebarHidden = false;
+    savePreferences();
+  });
+}
+
+/**
+ * Sets up mobile sidebar modal behavior.
+ */
+function setupMobileSidebar() {
+  const lightSidebar = document.getElementById("logo-mobile");
+  const darkSidebar = document.getElementById("logo-dark-mobile");
+  const showLightSidebar = document.getElementById("mobile-modal-light");
+  const closeMobileModalBtn = document.getElementById("close-mobile-modal-btn");
+
+  lightSidebar.addEventListener("click", () => {
+    showLightSidebar.showModal();
+  });
+
+  darkSidebar.addEventListener("click", () => {
+    showLightSidebar.showModal();
+  });
+
+  closeMobileModalBtn.addEventListener("click", () => {
+    showLightSidebar.close();
+  });
+}
+
+/**
+ * Sets up theme toggle behavior.
+ */
+function setupThemeToggle() {
+  const themeToggle = document.getElementById("mode-toggle-btn");
+  const themeMobileToggle = document.getElementById("mobile-toggle-btn");
+
+  document.body.classList.toggle("dark", userPreferences.theme === "dark");
+  themeToggle.checked = userPreferences.theme === "dark";
+  themeMobileToggle.checked = userPreferences.theme === "dark";
+
+  themeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark", themeToggle.checked);
+    userPreferences.theme = themeToggle.checked ? "dark" : "light";
+    savePreferences();
+  });
+
+  themeMobileToggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark", themeMobileToggle.checked);
+    userPreferences.theme = themeMobileToggle.checked ? "dark" : "light";
+    savePreferences();
+  });
+}
+
+/**
+ * Initializes the task board and UI handlers.
+ */
+async function initTaskBoard() {
+  tasks = await fetchTasks();
+  renderTasks(tasks);
+  setupModalHandlers();
+  setupNewTaskModal();
+  setupSidebarToggle();
+  setupMobileSidebar();
+  setupThemeToggle();
+}
+
+// Wait until DOM is fully loaded
+document.addEventListener("DOMContentLoaded", initTaskBoard);

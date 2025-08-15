@@ -8,7 +8,7 @@ This project involves **deploying a Kanban app to Netlify**, ensuring the app's 
 - **Recorded Presentation:**
  link1(https://www.loom.com/share/a3f50f294ef54d1bb409070339db2d57)
  link2(https://www.loom.com/share/af197f3df32c4e50ad2e1f688c4fe048)
-- **App link :** link*******
+- **App link :** link dazzling-dieffenbachia-553bd7.netlify.app
 - **Figma Design Reffrence :** (https://www.figma.com/design/y7bFCUYL5ZHfPeojACBXg2/Challenges-%7C-JSL?node-id=6033-11092)
 
 ### Initial Data Fetching & Loading State
